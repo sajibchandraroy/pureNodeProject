@@ -9,13 +9,13 @@ const app = {};
 
 // configuration
 app.config = {
-    port: 5000 || process.env.PORT,
+    port: 5000,
 };
 
 // create server
 app.createServer = () => {
     const server = http.createServer(app.handleReqRes);
-    server.listen(app.config.port, () => {
+    server.listen(process.env.PORT || app.config.port, () => {
         console.log(`listening to port ${app.config.port}`);
     });
 };
