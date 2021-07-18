@@ -43,7 +43,7 @@
         function languageInformation() {
             languageContainer.innerHTML = '';
             const inputWord = document.getElementById('inputWord').value;
-            fetch('http://localhost:5000/languageChecking?q=' + inputWord, {
+            fetch('https://language-pointer.herokuapp.com/languageChecking?q=' + inputWord, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -81,7 +81,7 @@
 
         function languageCheckingInformation() {
             languageCheckingContainer.innerHTML = '';
-            fetch('http://localhost:5000/checkingStatus', {
+            fetch('https://language-pointer.herokuapp.com/checkingStatus', {
                 method: 'GET',
             })
                 .then(res => res.json())
@@ -95,7 +95,7 @@
 
         function totalLanguage() {
             languageCheckingContainer.innerHTML = '';
-            fetch('http://localhost:5000/languages', {
+            fetch('https://language-pointer.herokuapp.com/languages', {
                 method: 'GET',
             })
                 .then(res => res.json())
