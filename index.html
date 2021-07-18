@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
+    <title>Document</title>
+</head>
+
+<body>
+    <div class="container mt-4">
+        <h1> Language Detection as a Service</h1>
+        <p>Detecting 100+ languages in real-time. Powered by humans and AI.</p>
+        <div class="row">
+            <textarea type="text" cols="30" rows="10" class="form-control mb-2" placeholder="Enter your language"
+                id="inputWord"></textarea>
+            <button class="btn btn-primary" id="languageChecker">Check</button>
+            <button class="btn btn-primary ml-1" id="languageCheckingStatus">status</button>
+            <button class="btn btn-primary ml-1" id="totalLanguage">Languages</button>
+        </div>
+
+        <ul id="language-status">
+        </ul>
+
+        <ul id="language-checking-status">
+        </ul>
+        <ul id="languages">
+        </ul>
+
+    </div>
+    <script>
+        const btnLanguageChecker = document.getElementById('languageChecker');
+        const languageContainer = document.getElementById('language-status');
+
+        const btnCheckingStatus = document.getElementById('languageCheckingStatus');
+        const languageCheckingContainer = document.getElementById('language-checking-status');
+
+        const btnLanguages = document.getElementById('totalLanguage');
+        const languagesContainer = document.getElementById('languages');
+
+        function languageInformation() {
+            languageContainer.innerHTML = '';
+            const inputWord = document.getElementById('inputWord').value;
+            fetch('http://localhost:5000/languageChecking?q=' + inputWord, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            })
+                .then(res => res.json())
+                .then(data => {
+                    console.log(data)
+                    if (data.err) {
+                        item.innerText = `Error: ${data.err}`;
+                        languageContainer.appendChild(item);
+                    }
+                    else {
+                        const results = data.results
+                        results.map(data => {
+                            if (data.length === undefined) {
+                                const item = document.createElement('li');
+                                item.innerText = `language: ${data.lang}, confidence: ${data.confidence}`;
+                                languageContainer.appendChild(item);
+                            }
+                            else {
+                                data.map(eachItem => {
+                                    const item = document.createElement('li');
+                                    item.innerText = `language: ${eachItem.lang}, confidence: ${eachItem.confidence}`;
+                                    languageContainer.appendChild(item);
+                                })
+                            }
+                        })
+                    }
+                })
+                .catch(err => {
+                    console.log(err)
+                })
+        }
+
+        function languageCheckingInformation() {
+            languageCheckingContainer.innerHTML = '';
+            fetch('http://localhost:5000/checkingStatus', {
+                method: 'GET',
+            })
+                .then(res => res.json())
+                .then(data => {
+                    console.log(data)
+                    const item = document.createElement('li');
+                    item.innerText = `remaining_today: ${data.remaining_today}, detections_today: ${data.detections_today}, daily_limit: ${data.daily_limit}`;
+                    languageCheckingContainer.appendChild(item);
+                })
+        }
+
+        function totalLanguage() {
+            languageCheckingContainer.innerHTML = '';
+            fetch('http://localhost:5000/languages', {
+                method: 'GET',
+            })
+                .then(res => res.json())
+                .then(data => {                    
+                    Object.values(data).map(item => {
+                        const languageitem = document.createElement('li');
+                        languageitem.innerText = `English Word: ${item[0]}, Local Word: ${item[1]}`;
+                        languagesContainer.appendChild(languageitem);
+                    })
+                })
+        }
+
+        btnLanguageChecker.addEventListener('click', () => {
+            languageInformation()
+
+        })
+        btnCheckingStatus.addEventListener('click', () => {
+            languageCheckingInformation()
+        })
+
+        btnLanguages.addEventListener('click', () => {
+            totalLanguage()
+        })
+    </script>
+</body>
+
+</html>
